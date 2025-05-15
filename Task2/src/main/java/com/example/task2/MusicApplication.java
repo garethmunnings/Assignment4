@@ -1,10 +1,13 @@
 package com.example.task2;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -13,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class MusicApplication extends Application {
     private Connection con = null;
@@ -61,7 +65,7 @@ public class MusicApplication extends Application {
                 passwordTextField.setText("");
             }
             else{
-                stage.setScene(createMainPage());
+                stage.setScene(createMainPage(stage));
             };
 
         });
@@ -69,7 +73,7 @@ public class MusicApplication extends Application {
         return loginPage;
     }
 
-    public Scene createMainPage()
+    public Scene createMainPage(Stage stage)
     {
         //browse albums
         Button browseAlbum = new Button("Browse albums");
@@ -77,16 +81,180 @@ public class MusicApplication extends Application {
         //browse songs
         Button browseSong = new Button("Browse songs");
 
-        HBox buttonsBox = new HBox(10, browseAlbum, browseSong);
+        Button exit = new Button("Exit");
+        HBox buttonsBox = new HBox(10, browseAlbum, browseSong, exit);
         buttonsBox.setAlignment(Pos.CENTER);
 
         browseAlbum.setOnAction(event -> {
+            stage.setScene(createBrowseAlbums(stage));
+        });
+
+        browseSong.setOnAction(event -> {
 
         });
 
-        getMetaData("Album");
-        Scene scene = new Scene(buttonsBox,800,600);
+        exit.setOnAction(event -> {
+            disconnectDB();
+            stage.close();
+        });
+
+        VBox vbox = new VBox(10,new Label("Main Page"), buttonsBox);
+        Scene scene = new Scene(vbox,800,600);
         return scene;
+    }
+
+    public Scene createBrowseAlbums(Stage stage)
+    {
+        Button addAlbum = new Button("+");
+        TextField searchBar = new TextField();
+        searchBar.setPromptText("Search");
+        Button search = new Button("Search");
+        HBox searchBox = new HBox(10,searchBar, search, addAlbum);
+
+
+
+        ObservableList<String> albums = getMetaData("Album");
+        ListView<String> listView = new ListView<String>(albums);
+
+        Label selectedLabel = new Label("Select an item...");
+
+        // Listen for selection changes
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                stage.setScene(createViewAlbum(stage, newVal));
+            }
+        });
+
+        addAlbum.setOnAction(event -> {
+            stage.setScene(createAddAlbum(stage));
+        });
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainPage(stage));
+        });
+
+
+
+        HBox optionsBox = new HBox(10, home);
+
+        VBox root = new VBox(10,new Label("Browse Albums"),searchBox, listView, selectedLabel, optionsBox);
+        Scene scene = new Scene(root,800,600);
+
+        return scene;
+    }
+
+    public Scene createViewAlbum(Stage stage, String album){
+        VBox root = new VBox();
+
+        Label label = new Label("View Album");
+        root.getChildren().add(label);
+
+        String[] parts = album.split(" ");
+        String AID = parts[0];
+        //String sql = "SELECT * FROM album WHERE AID = '" + AID + "'";
+        String sql = "SELECT * FROM song INNER JOIN album ON song.AID = album.AID WHERE song.AID = '" + AID + "'";
+
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(sql);
+            ObservableList<String> songs = FXCollections.observableArrayList();
+            while (rs.next()) {
+                songs.add(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4) + " " + rs.getString(5));
+            }
+
+            ListView<String> ls = new ListView<String>(songs);
+            root.getChildren().add(ls);
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainPage(stage));
+        });
+
+        Button back = new Button("Back");
+        back.setOnAction(event -> {
+            stage.setScene(createBrowseAlbums(stage));
+        });
+
+        HBox optionsBox = new HBox(10, home, back);
+        root.getChildren().add(optionsBox);
+
+        Scene scene = new Scene(root,800,600);
+        return scene;
+    }
+
+    public Scene createAddAlbum(Stage stage){
+        Label albumNameLabel = new Label("Album Name");
+        TextField albumNameTF = new TextField();
+        HBox albumNameHBox = new HBox(10, albumNameLabel, albumNameTF);
+
+        Label releaseYearLabel = new Label("Release Year");
+        TextField releaseYearTF = new TextField();
+        HBox releaseYearHBox = new HBox(10, releaseYearLabel, releaseYearTF);
+
+        Label albumArtistLabel = new Label("Artist");
+        TextField artistNameTF = new TextField();
+        HBox albumArtistHBox = new HBox(10, albumArtistLabel, artistNameTF);
+
+        Button save = new Button("Save");
+
+        save.setOnAction(event -> {
+            String a = "INSERT INTO Album VALUES ('"+albumNameTF.getText()+"', '" + releaseYearTF.getText() + "');";
+            try {
+                stmt.execute(a);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            String b = "SELECT * FROM Album WHERE Title = '"+albumNameTF.getText()+"';";
+            int albumId = 0;
+            try {
+                ResultSet result = stmt.executeQuery(b);
+                if (result.next()) {
+                    albumId = result.getInt("AID");
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            Button addSong = new Button("+");
+            addSong.setOnAction(e -> {
+                TextField name = new TextField();
+                name.setPromptText("Song name");
+
+                TextField length = new TextField();
+                length.setPromptText("Length (min:sec)");
+
+                HBox addSongHBox = new HBox(10, name, length);
+            });
+
+
+        });
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainPage(stage));
+        });
+
+        Button back = new Button("Back");
+        back.setOnAction(event -> {
+            stage.setScene(createBrowseAlbums(stage));
+        });
+
+        HBox optionsBox = new HBox(10, home, back);
+
+        VBox fields = new VBox(albumArtistHBox, albumNameHBox, releaseYearHBox, save, optionsBox);
+        Scene scene = new Scene(fields,800,600);
+        return scene;
+    }
+
+    public Scene createEditAlbum()
+    {
+        return null;
     }
 
     public boolean connectToDB(String username, String password) {
@@ -102,6 +270,7 @@ public class MusicApplication extends Application {
         try {
             con = DriverManager.getConnection(connectionString, username, password);
             System.out.println("Connection successful.");
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             return true;
         }
         catch (SQLException e) {
@@ -110,9 +279,6 @@ public class MusicApplication extends Application {
         }
 
     }
-    /**
-     * All done. Be polite and close the connection with the database.
-     */
     public void disconnectDB() {
         System.out.println("Disconnecting from database...");
 
@@ -123,10 +289,8 @@ public class MusicApplication extends Application {
             System.out.println("   Unable to disconnect from database");
         }
     }
-
-    public void getMetaData(String tableName) {
-        System.out.println("Examining Meta Data...");
-
+    public ObservableList<String> getMetaData(String tableName) {
+        ObservableList<String> items = FXCollections.observableArrayList();
         try {
             // perform query on database and retrieve results
             String sql = "SELECT * FROM " + tableName;
@@ -147,13 +311,15 @@ public class MusicApplication extends Application {
             System.out.println();
             System.out.println("\tDisplay by index");
             // while there are tuples in the result set, display them... using indices
-            int row = 0;
+
+
             while (result.next()) {
                 // get values from current tuple
-                row++;
-                String line = "\tRow[" + row + "]=";
+
+                String line = "";
                 for (int i = 1; i <= columns; i++) {
                     line = line.concat(result.getString(i) + " ");
+                    items.add(line);
                 }
 
                 // use info
@@ -164,5 +330,6 @@ public class MusicApplication extends Application {
         }
 
         System.out.println();
+        return items;
     }
 }
