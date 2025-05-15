@@ -11,16 +11,36 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MusicApplication extends Application {
+    private Connection con = null;
+    private Statement stmt = null;
 
     @Override
     public void start(Stage stage) throws Exception {
 
-        HBox usernameBox = new HBox(10,new Label("Username"), new TextField());
+
+        stage.setScene(createLoginPage(stage));
+
+        stage.setTitle("Music Application");
+        stage.show();
+    }
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public Scene createLoginPage(Stage stage)
+    {
+        TextField usernameTextField = new TextField();
+        HBox usernameBox = new HBox(10,new Label("Username"), usernameTextField);
         usernameBox.setAlignment(Pos.CENTER);
 
-        HBox passwordBox = new HBox(10, new Label("Password"), new TextField());
+        TextField passwordTextField = new TextField();
+        HBox passwordBox = new HBox(10, new Label("Password"), passwordTextField);
         passwordBox.setAlignment(Pos.CENTER);
 
         Button login = new Button("Login");
@@ -32,15 +52,50 @@ public class MusicApplication extends Application {
         borderPane.setCenter(vbox);
 
         login.setOnAction(event -> {
+            String username = usernameTextField.getText();
+            String password = passwordTextField.getText();
+
+
+            if(!connectToDB(username, password))
+            {
+                usernameTextField.setText("");
+                passwordTextField.setText("");
+            }
+            else{
+                stage.setScene(createMainPage());
+            };
 
         });
-        Scene scene = new Scene(borderPane, 800, 600);
-
-        stage.setScene(scene);
-        stage.setTitle("Music Application");
-        stage.show();
+        Scene loginPage = new Scene(borderPane, 800, 600);
+        return loginPage;
     }
-    public static void main(String[] args) {
-        launch(args);
+
+    public Scene createMainPage()
+    {
+        Pane pane = new Pane();
+        Scene scene = new Scene(pane,800,600);
+        return scene;
+    }
+
+    public boolean connectToDB(String username, String password) {
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        String connectionString = "jdbc:sqlserver://postsql.mandela.ac.za\\WRR;database=WRAP301Music;encrypt=true;trustServerCertificate=true";
+
+        try {
+            con = DriverManager.getConnection(connectionString, username, password);
+            System.out.println("Connection successful.");
+            return true;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 }
