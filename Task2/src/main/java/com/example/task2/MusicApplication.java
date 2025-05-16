@@ -113,6 +113,7 @@ public class MusicApplication extends Application {
     public Scene createBrowseAlbums(Stage stage)
     {
         Button addAlbum = new Button("+");
+
         TextField searchBar = new TextField();
         searchBar.setPromptText("Search");
         Button search = new Button("Search");
@@ -123,13 +124,37 @@ public class MusicApplication extends Application {
         ObservableList<String> albums = getMetaData("Album");
         ListView<String> listView = new ListView<String>(albums);
 
-        Label selectedLabel = new Label("Select an item...");
-
-        // Listen for selection changes
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 stage.setScene(createViewAlbum(stage, newVal));
             }
+        });
+
+        search.setOnAction(event -> {
+            String title = searchBar.getText();
+            String sql = "SELECT * FROM Album WHERE title LIKE '%" + title + "%'";
+            ResultSet rs = null;
+            ObservableList<String> albumsThatMatch = FXCollections.observableArrayList();
+            try {
+                rs = stmt.executeQuery(sql);
+
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int columns = rsmd.getColumnCount();
+                while(rs.next())
+                {
+                    String line = "";
+                    for (int i = 1; i <= columns; i++) {
+                        line = line.concat(rs.getString(i) + " ");
+                    }
+                    albumsThatMatch.add(line);
+                    System.out.println(line);
+                }
+                //TODO update the list
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            listView.setItems(albumsThatMatch);
         });
 
         addAlbum.setOnAction(event -> {
@@ -141,18 +166,16 @@ public class MusicApplication extends Application {
             stage.setScene(createMainPage(stage));
         });
 
-
-
         HBox optionsBox = new HBox(10, home);
 
-        VBox root = new VBox(10,new Label("Browse Albums"),searchBox, listView, selectedLabel, optionsBox);
+        VBox root = new VBox(10,new Label("Browse Albums"),searchBox, listView, optionsBox);
         Scene scene = new Scene(root,800,600);
 
         return scene;
     }
 
     public Scene createViewAlbum(Stage stage, String album){
-        //TODO edit albums
+        //TODO edit songs in albums
         VBox root = new VBox();
 
         Label label = new Label("View Album");
@@ -180,7 +203,7 @@ public class MusicApplication extends Application {
 
         Button delete = new Button("Delete");
         delete.setOnAction(event -> {
-            if(deleteAlbum(AID));
+            if(deleteAlbum(AID))
             {
                 System.out.println("Deleted Album");
             }
@@ -432,6 +455,7 @@ public class MusicApplication extends Application {
         }
 
     }
+
     public void disconnectDB() {
         System.out.println("Disconnecting from database...");
 
@@ -442,47 +466,31 @@ public class MusicApplication extends Application {
             System.out.println("   Unable to disconnect from database");
         }
     }
+
     public ObservableList<String> getMetaData(String tableName) {
         ObservableList<String> items = FXCollections.observableArrayList();
         try {
             // perform query on database and retrieve results
             String sql = "SELECT * FROM " + tableName;
-            //System.out.println("   Performing query, sql = " + sql);
             ResultSet result = stmt.executeQuery(sql);
 
             // get meta data of result set
             ResultSetMetaData meta = result.getMetaData();
 
             int columns = meta.getColumnCount();
-            //System.out.println("\tColumns = " + columns);
-            for (int i = 1; i <= columns; i++) {
-                String colName = meta.getColumnLabel(i);
-                String colType = meta.getColumnTypeName(i);
-                //System.out.println("\tcol[" + i + "]: name = " + colName + ", type = " + colType);
-            }
-
-            //System.out.println();
-            //System.out.println("\tDisplay by index");
-            // while there are tuples in the result set, display them... using indices
-
 
             while (result.next()) {
                 // get values from current tuple
-
                 String line = "";
                 for (int i = 1; i <= columns; i++) {
                     line = line.concat(result.getString(i) + " ");
-                    items.add(line);
-                }
 
-                // use info
-                //System.out.println(line);
+                }
+                items.add(line);
             }
         } catch (Exception e) {
             System.out.println("Could not query database... " + e.getMessage());
         }
-
-        System.out.println();
         return items;
     }
 
