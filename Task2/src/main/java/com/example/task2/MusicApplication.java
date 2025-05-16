@@ -11,13 +11,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+//TODO Browse songs / add songs to albums
 
+//TODO search for albums
+
+//TODO Album Added conformation
+
+//TODO delete song from album
 public class MusicApplication extends Application {
     private Connection con = null;
     private Statement stmt = null;
@@ -145,6 +152,7 @@ public class MusicApplication extends Application {
     }
 
     public Scene createViewAlbum(Stage stage, String album){
+        //TODO edit albums
         VBox root = new VBox();
 
         Label label = new Label("View Album");
@@ -170,6 +178,22 @@ public class MusicApplication extends Application {
             System.out.println(e.getMessage());
         }
 
+        Button delete = new Button("Delete");
+        delete.setOnAction(event -> {
+            if(deleteAlbum(AID));
+            {
+                System.out.println("Deleted Album");
+            }
+        });
+
+
+        Button editAlbum = new Button("Edit");
+        editAlbum.setOnAction(event -> {
+            stage.setScene(createEditAlbum(stage, AID));
+        });
+
+        HBox editDelete = new HBox(10,editAlbum,delete);
+
         Button home = new Button("Home");
         home.setOnAction(event -> {
             stage.setScene(createMainPage(stage));
@@ -181,6 +205,7 @@ public class MusicApplication extends Application {
         });
 
         HBox optionsBox = new HBox(10, home, back);
+        root.getChildren().add(editDelete);
         root.getChildren().add(optionsBox);
 
         Scene scene = new Scene(root,800,600);
@@ -188,6 +213,8 @@ public class MusicApplication extends Application {
     }
 
     public Scene createAddAlbum(Stage stage){
+        VBox fields = new VBox();
+
         Label albumNameLabel = new Label("Album Name");
         TextField albumNameTF = new TextField();
         HBox albumNameHBox = new HBox(10, albumNameLabel, albumNameTF);
@@ -200,8 +227,25 @@ public class MusicApplication extends Application {
         TextField artistNameTF = new TextField();
         HBox albumArtistHBox = new HBox(10, albumArtistLabel, artistNameTF);
 
-        Button save = new Button("Save");
 
+
+        List<HBox> songs = new ArrayList<>();
+        Button addSong = new Button("Add Song");
+
+        addSong.setOnAction(e -> {
+            TextField name = new TextField();
+            name.setPromptText("Song name");
+
+            TextField length = new TextField();
+            length.setPromptText("Length (min:sec)");
+
+            HBox addSongHBox = new HBox(10, name, length);
+            songs.add(addSongHBox);
+            fields.getChildren().add(fields.getChildren().size() - 2, addSongHBox);
+        });
+
+        Button save = new Button("Save");
+        AtomicInteger albumId = new AtomicInteger();
         save.setOnAction(event -> {
             String a = "INSERT INTO Album VALUES ('"+albumNameTF.getText()+"', '" + releaseYearTF.getText() + "');";
             try {
@@ -211,28 +255,30 @@ public class MusicApplication extends Application {
             }
 
             String b = "SELECT * FROM Album WHERE Title = '"+albumNameTF.getText()+"';";
-            int albumId = 0;
+
             try {
                 ResultSet result = stmt.executeQuery(b);
                 if (result.next()) {
-                    albumId = result.getInt("AID");
+                    albumId.set(result.getInt("AID"));
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+            //add songs from list
+            int i = 1;
 
-            Button addSong = new Button("+");
-            addSong.setOnAction(e -> {
-                TextField name = new TextField();
-                name.setPromptText("Song name");
-
-                TextField length = new TextField();
-                length.setPromptText("Length (min:sec)");
-
-                HBox addSongHBox = new HBox(10, name, length);
-            });
-
-
+            for(HBox song : songs){
+                TextField songName = (TextField)song.getChildren().getFirst();
+                TextField songLength = (TextField)song.getChildren().getLast();
+                String s = "INSERT INTO Song VALUES ("+ albumId +","+i+",'"+songName.getText()+"', '" + artistNameTF.getText() + "', '"+songLength.getText()+"');";
+                try{
+                    stmt.executeUpdate(s);
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+                i++;
+            }
         });
 
         Button home = new Button("Home");
@@ -245,16 +291,123 @@ public class MusicApplication extends Application {
             stage.setScene(createBrowseAlbums(stage));
         });
 
-        HBox optionsBox = new HBox(10, home, back);
 
-        VBox fields = new VBox(albumArtistHBox, albumNameHBox, releaseYearHBox, save, optionsBox);
+        HBox optionsBox = new HBox(10, home, back);
+        fields.getChildren().addAll(albumArtistHBox, albumNameHBox, releaseYearHBox, addSong, save, optionsBox);
         Scene scene = new Scene(fields,800,600);
         return scene;
     }
 
-    public Scene createEditAlbum()
+    public Scene createEditAlbum(Stage stage, String AID)
     {
-        return null;
+        String sqlAlbum = "SELECT * FROM Album WHERE AID = '"+AID+"';";
+        String sqlSong = "SELECT * FROM Song WHERE AID = '"+AID+"';";
+
+        String title = "";
+        String releaseYear = "";
+        String artistName = "";
+
+        try {
+            ResultSet rs = stmt.executeQuery(sqlAlbum);
+            if (rs.next()) {
+                title = rs.getString("Title");
+                releaseYear = rs.getString("Year");
+            }
+
+            ResultSet songs = stmt.executeQuery(sqlSong);
+            if(songs.next())
+                artistName = songs.getString("Artist");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        VBox fields = new VBox();
+
+        Label albumNameLabel = new Label("Album Name");
+        TextField albumNameTF = new TextField();
+        albumNameTF.setText(title);
+        HBox albumNameHBox = new HBox(10, albumNameLabel, albumNameTF);
+
+        Label releaseYearLabel = new Label("Release Year");
+        TextField releaseYearTF = new TextField();
+        releaseYearTF.setText(releaseYear);
+        HBox releaseYearHBox = new HBox(10, releaseYearLabel, releaseYearTF);
+
+        Label albumArtistLabel = new Label("Artist");
+        TextField artistNameTF = new TextField();
+        artistNameTF.setText(artistName);
+        HBox albumArtistHBox = new HBox(10, albumArtistLabel, artistNameTF);
+
+
+
+        List<HBox> songs = new ArrayList<>();
+        Button addSong = new Button("Add Song");
+
+        addSong.setOnAction(e -> {
+            TextField name = new TextField();
+            name.setPromptText("Song name");
+
+            TextField length = new TextField();
+            length.setPromptText("Length (min:sec)");
+
+            HBox addSongHBox = new HBox(10, name, length);
+            songs.add(addSongHBox);
+            fields.getChildren().add(fields.getChildren().size() - 2, addSongHBox);
+        });
+
+        Button save = new Button("Save");
+        AtomicInteger albumId = new AtomicInteger();
+        save.setOnAction(event -> {
+            String a = "INSERT INTO Album VALUES ('"+albumNameTF.getText()+"', '" + releaseYearTF.getText() + "');";
+            try {
+                stmt.execute(a);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            String b = "SELECT * FROM Album WHERE Title = '"+albumNameTF.getText()+"';";
+
+            try {
+                ResultSet result = stmt.executeQuery(b);
+                if (result.next()) {
+                    albumId.set(result.getInt("AID"));
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            //add songs from list
+            int i = 1;
+
+            for(HBox song : songs){
+                TextField songName = (TextField)song.getChildren().getFirst();
+                TextField songLength = (TextField)song.getChildren().getLast();
+                String s = "INSERT INTO Song VALUES ("+ albumId +","+i+",'"+songName.getText()+"', '" + artistNameTF.getText() + "', '"+songLength.getText()+"');";
+                try{
+                    stmt.executeUpdate(s);
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+                i++;
+            }
+        });
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainPage(stage));
+        });
+
+        Button back = new Button("Back");
+        back.setOnAction(event -> {
+            stage.setScene(createBrowseAlbums(stage));
+        });
+
+
+        HBox optionsBox = new HBox(10, home, back);
+        fields.getChildren().addAll(albumArtistHBox, albumNameHBox, releaseYearHBox, addSong, save, optionsBox);
+        Scene scene = new Scene(fields,800,600);
+        return scene;
     }
 
     public boolean connectToDB(String username, String password) {
@@ -294,22 +447,22 @@ public class MusicApplication extends Application {
         try {
             // perform query on database and retrieve results
             String sql = "SELECT * FROM " + tableName;
-            System.out.println("   Performing query, sql = " + sql);
+            //System.out.println("   Performing query, sql = " + sql);
             ResultSet result = stmt.executeQuery(sql);
 
             // get meta data of result set
             ResultSetMetaData meta = result.getMetaData();
 
             int columns = meta.getColumnCount();
-            System.out.println("\tColumns = " + columns);
+            //System.out.println("\tColumns = " + columns);
             for (int i = 1; i <= columns; i++) {
                 String colName = meta.getColumnLabel(i);
                 String colType = meta.getColumnTypeName(i);
-                System.out.println("\tcol[" + i + "]: name = " + colName + ", type = " + colType);
+                //System.out.println("\tcol[" + i + "]: name = " + colName + ", type = " + colType);
             }
 
-            System.out.println();
-            System.out.println("\tDisplay by index");
+            //System.out.println();
+            //System.out.println("\tDisplay by index");
             // while there are tuples in the result set, display them... using indices
 
 
@@ -323,7 +476,7 @@ public class MusicApplication extends Application {
                 }
 
                 // use info
-                System.out.println(line);
+                //System.out.println(line);
             }
         } catch (Exception e) {
             System.out.println("Could not query database... " + e.getMessage());
@@ -331,5 +484,18 @@ public class MusicApplication extends Application {
 
         System.out.println();
         return items;
+    }
+
+    public boolean deleteAlbum(String AID)
+    {
+        try {
+            String sqlSong = "DELETE FROM Song WHERE AID = " + AID;
+            String sqlAlbum = "DELETE FROM Album WHERE AID = " + AID;
+            stmt.executeUpdate(sqlSong);
+            stmt.executeUpdate(sqlAlbum);
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
     }
 }
