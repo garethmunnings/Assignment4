@@ -211,7 +211,7 @@ public class MusicApplication extends Application {
             String selectedSong = listView.getSelectionModel().getSelectedItem();
             stage.setScene(createEditSong(stage, selectedSong.split(" ")[0]));
         });
-
+        HBox optionsBox = new HBox(10, delete, edit);
 
         search.setOnAction(event -> {
             String title = searchBar.getText();
@@ -244,9 +244,7 @@ public class MusicApplication extends Application {
             stage.setScene(createMainScene(stage));
         });
 
-        HBox optionsBox = new HBox(10, home);
-
-        VBox root = new VBox(10,new Label("Browse Songs"),searchBox, listView, optionsBox, delete);
+        VBox root = new VBox(10,new Label("Browse Songs"),searchBox, listView, optionsBox, home);
         Scene scene = new Scene(root,800,600);
 
         return scene;
@@ -511,8 +509,44 @@ public class MusicApplication extends Application {
         return scene;
     }
 
-    public Scene createEditSong(Stage stage, String SID)
-    {
+    public Scene createEditSong(Stage stage, String SID) {
+        String sql = "SELECT * FROM Song WHERE SID = '"+SID+"';";
+        ResultSet rs = null;
+        String title = "";
+        String length = "";
+        String artistName = "";
+
+        try{
+            rs = stmt.executeQuery(sql);
+            title = rs.getString("Title");
+            length = rs.getString("Length");
+            artistName = rs.getString("Artist");
+
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+
+        }
+
+        Label nameLabel = new Label("Song Name:");
+        TextField name = new TextField();
+        name.setText(title);
+
+        Label lengthLabel = new Label("Length (min:sec): ");
+        TextField lengthTF = new TextField();
+        lengthTF.setText(length);
+
+        Label artistLabel = new Label("Artist: ");
+        TextField artistNameTF = new TextField();
+        artistNameTF.setText(artistName);
+
+        HBox nameHBox = new HBox(10, nameLabel, name);
+        HBox lengthHBox = new HBox(10, lengthLabel, lengthTF);
+        HBox artistHBox = new HBox(10, artistLabel, artistNameTF);
+
+        VBox fields = new VBox(nameHBox, lengthHBox, artistHBox);
+        Scene scene = new Scene(fields,800,600);
         return null;
     }
 
