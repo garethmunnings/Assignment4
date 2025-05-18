@@ -558,6 +558,18 @@ public class MusicApplication extends Application {
         HBox lengthHBox = new HBox(10, lengthLabel, lengthTF);
         HBox artistHBox = new HBox(10, artistLabel, artistNameTF);
 
+
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainScene(stage));
+        });
+
+        Button back = new Button("Back");
+        back.setOnAction(event -> {
+            stage.setScene(createBrowseSongs(stage));
+        });
+
         VBox fields = new VBox(songNoHBox, nameHBox, lengthHBox, artistHBox);
         Scene scene = new Scene(fields,800,600);
         return scene;
