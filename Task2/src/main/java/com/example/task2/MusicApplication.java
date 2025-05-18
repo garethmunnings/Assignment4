@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,6 +14,7 @@ import javafx.stage.Stage;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 //TODO Browse songs / add songs to albums
 
@@ -31,17 +29,18 @@ public class MusicApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setScene(createLoginPage(stage));
+        stage.setScene(createLoginScene(stage));
 
         stage.setTitle("Music Application");
         stage.show();
 
     }
+
     public static void main(String[] args) {
         launch(args);
     }
 
-    public Scene createLoginPage(Stage stage)
+    public Scene createLoginScene(Stage stage)
     {
         TextField usernameTextField = new TextField();
         usernameTextField.setText("WRAP301User");
@@ -54,6 +53,7 @@ public class MusicApplication extends Application {
         passwordBox.setAlignment(Pos.CENTER);
 
         Button login = new Button("Login");
+        login.setId("loginButton");
 
         VBox vbox = new VBox(10, usernameBox, passwordBox, login);
         vbox.setAlignment(Pos.CENTER);
@@ -72,7 +72,7 @@ public class MusicApplication extends Application {
                 passwordTextField.setText("");
             }
             else{
-                stage.setScene(createMainPage(stage));
+                stage.setScene(createMainScene(stage));
             };
 
         });
@@ -80,7 +80,7 @@ public class MusicApplication extends Application {
         return loginPage;
     }
 
-    public Scene createMainPage(Stage stage)
+    protected Scene createMainScene(Stage stage)
     {
         //browse albums
         Button browseAlbum = new Button("Browse albums");
@@ -97,7 +97,7 @@ public class MusicApplication extends Application {
         });
 
         browseSong.setOnAction(event -> {
-
+            stage.setScene(createBrowseSongs(stage));
         });
 
         exit.setOnAction(event -> {
@@ -163,12 +163,90 @@ public class MusicApplication extends Application {
 
         Button home = new Button("Home");
         home.setOnAction(event -> {
-            stage.setScene(createMainPage(stage));
+            stage.setScene(createMainScene(stage));
         });
 
         HBox optionsBox = new HBox(10, home);
 
         VBox root = new VBox(10,new Label("Browse Albums"),searchBox, listView, optionsBox);
+        Scene scene = new Scene(root,800,600);
+
+        return scene;
+    }
+
+    public Scene createBrowseSongs(Stage stage)
+    {
+        TextField searchBar = new TextField();
+        searchBar.setPromptText("Search");
+        Button search = new Button("Search");
+        HBox searchBox = new HBox(10,searchBar, search);
+
+
+
+        ObservableList<String> songs = getMetaData("Song");
+        ListView<String> listView = new ListView<String>(songs);
+
+        Button delete = new Button("Delete");
+        delete.setOnAction(event -> {
+            String selectedSong = listView.getSelectionModel().getSelectedItem();
+            String SID = selectedSong.split(" ")[0];
+            if(showConfirmation("Delete song", "Are you sure you want to delete this song?")){
+                String sql = "DELETE FROM Song WHERE SID = '" + SID + "'";
+                try {
+                    stmt.executeUpdate(sql);
+                    songs.remove(selectedSong);
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+                System.out.println("Song deleted");
+
+            }
+            else {
+                System.out.println("Song not deleted");
+            }
+        });
+
+        Button edit = new Button("Edit");
+        edit.setOnAction(event -> {
+            String selectedSong = listView.getSelectionModel().getSelectedItem();
+            stage.setScene(createEditSong(stage, selectedSong.split(" ")[0]));
+        });
+
+
+        search.setOnAction(event -> {
+            String title = searchBar.getText();
+            String sql = "SELECT * FROM Song WHERE title LIKE '%" + title + "%'";
+            ResultSet rs = null;
+            ObservableList<String> songsThatMatch = FXCollections.observableArrayList();
+            try {
+                rs = stmt.executeQuery(sql);
+
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int columns = rsmd.getColumnCount();
+                while(rs.next())
+                {
+                    String line = "";
+                    for (int i = 1; i <= columns; i++) {
+                        line = line.concat(rs.getString(i) + " ");
+                    }
+                    songsThatMatch.add(line);
+                    System.out.println(line);
+                }
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            listView.setItems(songsThatMatch);
+        });
+
+        Button home = new Button("Home");
+        home.setOnAction(event -> {
+            stage.setScene(createMainScene(stage));
+        });
+
+        HBox optionsBox = new HBox(10, home);
+
+        VBox root = new VBox(10,new Label("Browse Songs"),searchBox, listView, optionsBox, delete);
         Scene scene = new Scene(root,800,600);
 
         return scene;
@@ -191,7 +269,7 @@ public class MusicApplication extends Application {
             rs = stmt.executeQuery(sql);
             ObservableList<String> songs = FXCollections.observableArrayList();
             while (rs.next()) {
-                songs.add(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4) + " " + rs.getString(5));
+                songs.add(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4) + " " + rs.getString(5) + " " + rs.getString(6));
             }
 
             ListView<String> ls = new ListView<String>(songs);
@@ -219,7 +297,7 @@ public class MusicApplication extends Application {
 
         Button home = new Button("Home");
         home.setOnAction(event -> {
-            stage.setScene(createMainPage(stage));
+            stage.setScene(createMainScene(stage));
         });
 
         Button back = new Button("Back");
@@ -306,7 +384,7 @@ public class MusicApplication extends Application {
 
         Button home = new Button("Home");
         home.setOnAction(event -> {
-            stage.setScene(createMainPage(stage));
+            stage.setScene(createMainScene(stage));
         });
 
         Button back = new Button("Back");
@@ -418,7 +496,7 @@ public class MusicApplication extends Application {
 
         Button home = new Button("Home");
         home.setOnAction(event -> {
-            stage.setScene(createMainPage(stage));
+            stage.setScene(createMainScene(stage));
         });
 
         Button back = new Button("Back");
@@ -431,6 +509,11 @@ public class MusicApplication extends Application {
         fields.getChildren().addAll(albumArtistHBox, albumNameHBox, releaseYearHBox, addSong, save, optionsBox);
         Scene scene = new Scene(fields,800,600);
         return scene;
+    }
+
+    public Scene createEditSong(Stage stage, String SID)
+    {
+        return null;
     }
 
     public boolean connectToDB(String username, String password) {
@@ -505,5 +588,15 @@ public class MusicApplication extends Application {
             System.out.println(e.getMessage());
         }
         return true;
+    }
+
+    public boolean showConfirmation(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null); // Optional: no header
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 }
