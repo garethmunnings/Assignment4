@@ -1,0 +1,14 @@
+.my-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8;
+}
+
+.tile {
+    -fx-border-color: #1191d0;
+    -fx-border-style: dashed;
+    -fx-border-dash-array: 200 100; //doesntwork
+    -fx-background-color:  #b9e1f8
+}
