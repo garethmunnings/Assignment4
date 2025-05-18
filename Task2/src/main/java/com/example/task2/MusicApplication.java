@@ -515,12 +515,20 @@ public class MusicApplication extends Application {
         String title = "";
         String length = "";
         String artistName = "";
+        Integer trackID = null;
 
         try{
+
             rs = stmt.executeQuery(sql);
-            title = rs.getString("Title");
-            length = rs.getString("Length");
-            artistName = rs.getString("Artist");
+
+            if(rs.next()) {
+                trackID = rs.getInt(3);
+                title = rs.getString(4);
+                length = rs.getString(5);
+                artistName = rs.getString(6);
+            }
+            else
+                System.out.println("Wa");
 
         }
         catch (SQLException e) {
@@ -528,6 +536,10 @@ public class MusicApplication extends Application {
 
 
         }
+
+        Label songNoLabel = new Label("Song No");
+        TextField songNoTF = new TextField();
+        songNoTF.setText(trackID.toString());
 
         Label nameLabel = new Label("Song Name:");
         TextField name = new TextField();
@@ -541,13 +553,14 @@ public class MusicApplication extends Application {
         TextField artistNameTF = new TextField();
         artistNameTF.setText(artistName);
 
+        HBox songNoHBox = new HBox(10, songNoLabel, songNoTF);
         HBox nameHBox = new HBox(10, nameLabel, name);
         HBox lengthHBox = new HBox(10, lengthLabel, lengthTF);
         HBox artistHBox = new HBox(10, artistLabel, artistNameTF);
 
-        VBox fields = new VBox(nameHBox, lengthHBox, artistHBox);
+        VBox fields = new VBox(songNoHBox, nameHBox, lengthHBox, artistHBox);
         Scene scene = new Scene(fields,800,600);
-        return null;
+        return scene;
     }
 
     public boolean connectToDB(String username, String password) {
