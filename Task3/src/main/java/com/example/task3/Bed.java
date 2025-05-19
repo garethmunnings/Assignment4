@@ -21,4 +21,8 @@ public class Bed {
     public int getRows() { return rows; }
     public int getCols() { return cols; }
     public Tile[][] getGrid() { return grid; }
+
+    public void updateTile(int row, int col, Tile tile) {
+        grid[row][col] = tile;
+    }
 }

@@ -4,9 +4,10 @@ import javafx.scene.image.ImageView;
 
 public abstract class Feline {
     String type;
-    String player;
+    int player;
+    ImageView image;
 
-    public String getPlayer() {return player;}
+    public int getPlayer() {return player;}
     public String getType() {return type;}
 
     protected void initializeIV(ImageView imageView) {
@@ -14,4 +15,6 @@ public abstract class Feline {
         imageView.setPreserveRatio(true);
 
     }
+
+    public ImageView getIV() {return image;}
 }

@@ -6,9 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-//TODO maybe put add update tile in bed class then reference that
-//TODO figure out where to render bed
-
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {

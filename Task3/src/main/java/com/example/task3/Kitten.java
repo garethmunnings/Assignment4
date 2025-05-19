@@ -20,4 +20,13 @@ public class Kitten extends Feline {
             kittenIV = new ImageView(purpleKitten);
         initializeIV(kittenIV);
     }
+
+    @Override
+    public ImageView getIV() {
+        return kittenIV;
+    }
+    @Override
+    public String getType() {
+        return type;
+    }
 }

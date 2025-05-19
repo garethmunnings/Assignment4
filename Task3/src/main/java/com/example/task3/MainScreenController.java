@@ -26,24 +26,20 @@ public class MainScreenController {
             for (int col = 0; col < game.getBed().getCols(); col++) {
                 Tile tile = game.getBed().getTile(row, col);
 
-                Pane tilePane = new Pane();
-                tilePane.setPrefSize(100, 100);
-                tilePane.getStyleClass().add("tile");
+                Pane pane = new Pane();
+                pane.setPrefSize(100, 100);
+                pane.getStyleClass().add("tile");
 
                 int r = row, c = col;
-                tilePane.setOnMouseClicked(e -> handleTileClick(r, c));
+                pane.setOnMouseClicked(e -> handleTileClick(r, c));
 
                 if (!tile.isEmpty()) {
-                    if(game.getPlayerTurn() == 1) {
+                    Feline feline = tile.getFeline();
 
-                        //tilePane.getChildren().add();
-                    }
-                    else{
-                        ImageView imageView = new ImageView();
-                        tilePane.getChildren().add(imageView);
-                    }
+                    ImageView iv = feline.getIV();
+                    pane.getChildren().add(iv);
                 }
-                gridPane.add(tilePane, col, row);
+                gridPane.add(pane, col, row);
             }
         }
     }
@@ -52,11 +48,9 @@ public class MainScreenController {
     private void handleTileClick(int r, int c) {
         Tile tile = game.getBed().getTile(r, c);
         if (tile.isEmpty()) {
-            tile.setFeline(new Kitten(1));
+            tile.setFeline(new Kitten(game.getPlayerTurn()));
         }
-        else {
-            tile.setFeline(null);
-        }
+
         game.endTurn();
         drawGrid();
     }
