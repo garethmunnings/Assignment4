@@ -29,59 +29,66 @@ public class MainScreenController {
 
     private void drawPlayerPools(){
         player1GridPane.getChildren().clear();
-        for (int j = 0; j < game.getPlayer1().getPool().getNumberOfKittensAvailable(); j++)
-        {
-            Pane pane1 = new Pane();
-            pane1.setPrefSize(100, 100);
-            pane1.getStyleClass().add("pool-tile");
-
-            ImageView iv = new Kitten(1).getIV();
-            pane1.getChildren().add(iv);
-            player1GridPane.add(pane1,1,j);
-
-            setUpDragStartEvent(pane1, 1, j);
-
-            Pane pane2 = new Pane();
-            pane2.setPrefSize(100, 100);
-            pane2.getStyleClass().add("pool-tile");
-
-
-            pane2.getChildren().add(game.getPlayer2().getPool().getNextKitten().getIV());
-            player2GridPane.add(pane2,0,j);
-
-            setUpDragStartEvent(pane2, 0, j);
-        }
-        for (int j = 0; j < 8; j++)
-        {
-            Pane pane1 = new Pane();
-            pane1.setPrefSize(100, 100);
-            pane1.getStyleClass().add("pool-tile");
-
-            setUpDragStartEvent(pane1, 0,j);
-
-            Pane pane2 = new Pane();
-            pane2.setPrefSize(100, 100);
-            pane2.getStyleClass().add("pool-tile");
-
-            setUpDragStartEvent(pane2, 1,j);
-            pane1.getChildren().add(game.getPlayer1().getPool().getNextCat().getIV());
-            player1GridPane.add(pane1,0,j);
-
-            pane2.getChildren().add(game.getPlayer2().getPool().getNextCat().getIV());
-            player2GridPane.add(pane2,1,j);
-        }
+        drawPool(1);
+        drawPool(2);
 
     }
 
-    private void setUpDragStartEvent(Pane pane, int col, int row){
+    private void drawPool(int playernum){
+        Player player;
+        if(playernum == 1)
+            player = game.getPlayer1();
+        else if(playernum == 2)
+            player = game.getPlayer2();
+        else{
+            System.out.println("Invalid playernum");
+            return;
+        }
+    int i = 0;
+        for (Kitten kitten : player.getPool().getKittenPool()) {
+            Pane pane = new Pane();
+            pane.setPrefSize(100, 100);
+            pane.getStyleClass().add("pool-tile");
+
+            ImageView iv = kitten.getIV();
+            pane.getChildren().add(iv);
+            if(playernum == 1)
+                player1GridPane.add(pane, 0, i);
+            else
+                player2GridPane.add(pane, 0, i);
+
+            Tile t = new Tile(-1,-1);
+            t.setFeline(kitten);
+            setUpDragStartEvent(pane, t);
+            i++;
+        }
+        for (Cat cat : player.getPool().getCatPool()) {
+            Pane pane = new Pane();
+            pane.setPrefSize(100, 100);
+            pane.getStyleClass().add("pool-tile");
+
+            ImageView iv = new Cat(playernum).getIV();
+            pane.getChildren().add(iv);
+            if(playernum == 1)
+                player1GridPane.add(pane, 0, i + player.getPool().getNumberOfKittensAvailable());
+            else
+                player2GridPane.add(pane, 0, i + player.getPool().getNumberOfKittensAvailable());
+
+            Tile t = new Tile(-1,-1);
+            t.setFeline(cat);
+            setUpDragStartEvent(pane, t);
+            i++;
+        }
+    }
+
+    private void setUpDragStartEvent(Pane pane, Tile tile){
         pane.setOnDragDetected(event -> {
+            DragContext.draggedObject = tile;
             Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
 
             ClipboardContent content = new ClipboardContent();
-            content.putString("kitten");
+            content.putString("feline");
             db.setContent(content);
-
-            game.getCurrentPlayer().getPool();
 
             event.consume();
         });
@@ -102,44 +109,42 @@ public class MainScreenController {
                 pane.setPrefSize(100, 100);
                 pane.getStyleClass().add("tile");
 
-
                 pane.setOnDragOver(event -> {
                     if (event.getGestureSource() != pane && event.getDragboard().hasString()) {
                         event.acceptTransferModes(TransferMode.MOVE);
                     }
                     event.consume();
                 });
-
+                int r = row; int c = col;
                 pane.setOnDragDropped(event -> {
                     Dragboard db = event.getDragboard();
                     boolean success = false;
 
                     if (db.hasString()) {
-                        Pane sourcePane = (Pane) event.getGestureSource();
-                        Node kitten = sourcePane.getChildren().get(0);
+                        Tile t = (Tile)DragContext.draggedObject;
+                        tile.setFeline(t.getFeline());
+                        game.getBed().updateTile(r,c, tile, false);
+                        pane.getChildren().add(tile.getFeline().getIV());
 
-                        sourcePane.getChildren().clear();
-                        pane.getChildren().add(kitten);
-
+                        game.getBed().getTile(t.getRow(), t.getCol()).setFeline(null);
                         success = true;
                     }
 
-                    Tile t = new Tile();
-                    t.setFeline(game.getPlayer1().getPool().getNextKitten());
-                    game.getBed().updateTile(0,0, t);
                     game.getBed().display();
+                    drawGrid();
+
                     event.setDropCompleted(success);
                     event.consume();
                 });
 
-                int r = row, c = col;
-                pane.setOnMouseClicked(e -> handleTileClick(r, c));
+//              pane.setOnMouseClicked(e -> handleTileClick(r, c));
 
                 if (!tile.isEmpty()) {
                     Feline feline = tile.getFeline();
 
                     ImageView iv = feline.getIV();
                     pane.getChildren().add(iv);
+                    setUpDragStartEvent(pane, tile);
                 }
                 gridPane.add(pane, col, row);
             }

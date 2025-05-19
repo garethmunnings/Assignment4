@@ -11,6 +11,7 @@ public class Pool {
         for (int i = 0; i < 8; i++) {
             kittenPool.add(new Kitten(playerNum));
         }
+        catPool = new ArrayList<>();
     }
 
     public Kitten getNextKitten(){
@@ -46,4 +47,14 @@ public class Pool {
 
     public int getNumberOfKittensAvailable(){return kittenPool.size();}
     public int getNumberOfCatsAvailable(){return catPool.size();}
+
+    public ArrayList<Kitten> getKittenPool(){return kittenPool;}
+    public ArrayList<Cat> getCatPool(){return catPool;}
+
+    public void addKitten(Kitten kitten){
+        kittenPool.add(kitten);
+    }
+    public void addCat(Cat cat){
+        catPool.add(cat);
+    }
 }
