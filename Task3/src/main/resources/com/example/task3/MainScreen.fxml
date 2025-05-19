@@ -11,8 +11,18 @@
             fx:controller="com.example.task3.MainScreenController"
             prefHeight="800.0" prefWidth="1000.0"
             stylesheets = "@styles.css">
+    <top>
+        <Label fx:id="playerTurnLabel" text = "Player 1's turn"/>
+    </top>
     <center>
         <GridPane alignment = "CENTER" fx:id = "gridPane"/>
     </center>
+
+    <left>
+        <GridPane fx:id = "player1Pool"></GridPane>
+    </left>
+    <right>
+        <GridPane fx:id = "player2Pool"></GridPane>
+    </right>
 
 </BorderPane>

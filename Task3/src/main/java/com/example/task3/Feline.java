@@ -3,12 +3,17 @@ package com.example.task3;
 import javafx.scene.image.ImageView;
 
 public abstract class Feline {
-    String type;
-    int player;
-    ImageView image;
+    protected String type;
+    protected int player;
+    protected ImageView image;
+    protected boolean inPlay;
 
     public int getPlayer() {return player;}
     public String getType() {return type;}
+    public boolean getInPlay() {return inPlay;}
+
+    public void setInPlay() {this.inPlay = true;}
+    public void setOutOfPlay() {this.inPlay = false;}
 
     protected void initializeIV(ImageView imageView) {
         imageView.setFitWidth(80);

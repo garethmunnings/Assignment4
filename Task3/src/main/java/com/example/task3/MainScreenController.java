@@ -1,7 +1,7 @@
 package com.example.task3;
 
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -11,12 +11,22 @@ public class MainScreenController {
 
     @FXML
     private GridPane gridPane;
+    @FXML Label playerTurnLabel;
     Game game;
 
     @FXML
     private void initialize() {
         game = new Game();
         drawGrid();
+        drawPlayerPools();
+    }
+
+    private void drawPlayerPools(){
+
+    }
+
+    private void changePlayerTurnLabel() {
+        playerTurnLabel.setText("Player " + game.getPlayerTurn() + "'s turn");
     }
 
     private void drawGrid() {
@@ -48,10 +58,12 @@ public class MainScreenController {
     private void handleTileClick(int r, int c) {
         Tile tile = game.getBed().getTile(r, c);
         if (tile.isEmpty()) {
-            tile.setFeline(new Kitten(game.getPlayerTurn()));
+            if(game.getCurrentPlayer().getPool().hasKittenAvailable()) {
+                tile.setFeline(game.getCurrentPlayer().getPool().getNextKitten());
+            }
         }
-
         game.endTurn();
+        changePlayerTurnLabel();
         drawGrid();
     }
 
