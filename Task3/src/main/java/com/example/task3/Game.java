@@ -1,24 +1,25 @@
 package com.example.task3;
 
 public class Game {
-    private String playerTurn;
+    private int playerTurn;
     private Bed bed;
+
     public Game() {
-        playerTurn = "player 1";
+        playerTurn = 1;
         bed = new Bed(6, 6);
     }
 
     public Bed getBed() {return bed;}
 
-    public String getPlayerTurn() {
+    public int getPlayerTurn() {
         return playerTurn;
     }
 
     public void endTurn()
     {
-        if(playerTurn.equals("player 2"))
-            playerTurn = "player 1";
+        if(playerTurn == 2)
+            playerTurn = 1;
         else
-            playerTurn = "player 2";
+            playerTurn = 2;
     }
 }

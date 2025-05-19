@@ -7,10 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 public class MainScreenController {
-    private final Image orangeCat = new Image(getClass().getResource("/com/example/task3/images/OrangeCat.png").toString());
-    private final Image orangeKitten = new Image(getClass().getResource("/com/example/task3/images/OrangeKitten.png").toString());
-    private final Image purpleCat = new Image(getClass().getResource("/com/example/task3/images/PurpleCat.png").toString());
-    private final Image purpleKitten = new Image(getClass().getResource("/com/example/task3/images/PurpleKitten.png").toString());
+
 
     @FXML
     private GridPane gridPane;
@@ -21,8 +18,6 @@ public class MainScreenController {
         game = new Game();
         drawGrid();
     }
-
-
 
     private void drawGrid() {
         gridPane.getChildren().clear();
@@ -39,14 +34,12 @@ public class MainScreenController {
                 tilePane.setOnMouseClicked(e -> handleTileClick(r, c));
 
                 if (!tile.isEmpty()) {
-                    if(game.getPlayerTurn().equals("player 1")) {
-                        ImageView imageView = new ImageView(orangeKitten);
-                        initializeIV(imageView);
-                        tilePane.getChildren().add(imageView);
+                    if(game.getPlayerTurn() == 1) {
+
+                        //tilePane.getChildren().add();
                     }
                     else{
-                        ImageView imageView = new ImageView(purpleKitten);
-                        initializeIV(imageView);
+                        ImageView imageView = new ImageView();
                         tilePane.getChildren().add(imageView);
                     }
                 }
@@ -54,16 +47,12 @@ public class MainScreenController {
             }
         }
     }
-    private void initializeIV(ImageView imageView) {
-        imageView.setFitWidth(80);
-        imageView.setPreserveRatio(true);
 
-    }
 
     private void handleTileClick(int r, int c) {
         Tile tile = game.getBed().getTile(r, c);
         if (tile.isEmpty()) {
-            tile.setFeline(new Kitten("Player1"));
+            tile.setFeline(new Kitten(1));
         }
         else {
             tile.setFeline(null);

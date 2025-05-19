@@ -9,7 +9,7 @@ public class Tile {
 
     public boolean isEmpty() { return feline == null; }
 
-    public void setTile(){
-
+    public void setEmpty(){
+        feline = null;
     }
 }
