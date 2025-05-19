@@ -9,7 +9,6 @@ public class Cat extends Feline {
     private ImageView catIV;
 
     public Cat(int player) {
-        this.type = "cat";
         this.player = player;
         if(player == 1)
             catIV = new ImageView(orangeCat);
@@ -24,8 +23,5 @@ public class Cat extends Feline {
     public ImageView getIV() {
         return catIV;
     }
-    @Override
-    public String getType() {
-        return type;
-    }
+
 }

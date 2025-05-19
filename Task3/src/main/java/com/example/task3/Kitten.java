@@ -11,7 +11,6 @@ public class Kitten extends Feline {
     private ImageView kittenIV;
 
     public Kitten(int player) {
-        type = "kitten";
         this.player = player;
 
         if(player == 1)
@@ -25,8 +24,5 @@ public class Kitten extends Feline {
     public ImageView getIV() {
         return kittenIV;
     }
-    @Override
-    public String getType() {
-        return type;
-    }
+
 }

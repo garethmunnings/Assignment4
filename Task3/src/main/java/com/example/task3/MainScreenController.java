@@ -10,6 +10,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+
 public class MainScreenController {
 
 
@@ -35,6 +37,7 @@ public class MainScreenController {
     }
 
     private void drawPool(int playernum){
+        //TODO make the pool stay the same size when felines are added back to it
         Player player;
         if(playernum == 1)
             player = game.getPlayer1();
@@ -123,10 +126,18 @@ public class MainScreenController {
                     if (db.hasString()) {
                         Tile t = (Tile)DragContext.draggedObject;
                         tile.setFeline(t.getFeline());
-                        game.getBed().updateTile(r,c, tile, false);
+                        if(t.getRow() > -1)
+                            game.getBed().getTile(t.getRow(), t.getCol()).setFeline(null);
+                        ArrayList<Feline> felinesBoopedOffBed;
+                        felinesBoopedOffBed = game.getBed().updateTile(r,c, tile, false);
+
+                        for(Feline f : felinesBoopedOffBed)
+                            game.getCurrentPlayer().getPool().addFeline(f);
+
+                        drawPool(game.getCurrentPlayer().getNum());
                         pane.getChildren().add(tile.getFeline().getIV());
 
-                        game.getBed().getTile(t.getRow(), t.getCol()).setFeline(null);
+
                         success = true;
                     }
 

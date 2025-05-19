@@ -57,4 +57,11 @@ public class Pool {
     public void addCat(Cat cat){
         catPool.add(cat);
     }
+
+    public void addFeline(Feline feline){
+        if(feline instanceof Kitten)
+            addKitten((Kitten)feline);
+        else
+            addCat((Cat)feline);
+    }
 }
