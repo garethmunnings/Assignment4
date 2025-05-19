@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 
 public class MainScreenController {
 
@@ -12,6 +13,8 @@ public class MainScreenController {
     @FXML
     private GridPane gridPane;
     @FXML Label playerTurnLabel;
+    @FXML private GridPane player1GridPane;
+    @FXML private GridPane player2GridPane;
     Game game;
 
     @FXML
@@ -22,6 +25,29 @@ public class MainScreenController {
     }
 
     private void drawPlayerPools(){
+        player1GridPane.getChildren().clear();
+        for (int j = 0; j < 8; j++)
+        {
+            //Pane pane = new Pane();
+            //pane.setPrefSize(100, 100);
+            //pane.getStyleClass().add("pool-tile");
+
+            //System.out.println(game.getPlayer1().getPool().getNextKitten().getIV() + " " + j);
+            //pane.getChildren().add(game.getPlayer1().getPool().getNextKitten().getIV());
+            player1GridPane.add(game.getPlayer1().getPool().getNextKitten().getIV(),0,j);
+            player2GridPane.add(game.getPlayer2().getPool().getNextKitten().getIV(),0,j);
+        }
+        for (int j = 0; j < 8; j++)
+        {
+            //Pane pane = new Pane();
+            //pane.setPrefSize(100, 100);
+            //pane.getStyleClass().add("pool-tile");
+
+            //System.out.println(game.getPlayer1().getPool().getNextCat().getIV() + " " + j);
+            //pane.getChildren().add(game.getPlayer1().getPool().getNextCat().getIV());
+            player1GridPane.add(game.getPlayer1().getPool().getNextCat().getIV(), 1,j);
+            player2GridPane.add(game.getPlayer2().getPool().getNextCat().getIV(),1,j);
+        }
 
     }
 

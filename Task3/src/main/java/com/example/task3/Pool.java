@@ -6,7 +6,7 @@ public class Pool {
         pool = new Feline[]{new Kitten(playerNum), new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum) };
     }
 
-    public Feline[] getPool(){return pool;}
+    //public Feline[] getPool(){return pool;}
 
     public Kitten getNextKitten(){
         for (int i = 0; i < pool.length; i++) {

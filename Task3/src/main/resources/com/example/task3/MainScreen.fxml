@@ -9,7 +9,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.task3.MainScreenController"
-            prefHeight="800.0" prefWidth="1000.0"
+            prefHeight="800.0" prefWidth="1200.0"
             stylesheets = "@styles.css">
     <top>
         <Label fx:id="playerTurnLabel" text = "Player 1's turn"/>
@@ -19,10 +19,10 @@
     </center>
 
     <left>
-        <GridPane fx:id = "player1Pool"></GridPane>
+        <GridPane alignment = "CENTER" fx:id = "player1GridPane"></GridPane>
     </left>
     <right>
-        <GridPane fx:id = "player2Pool"></GridPane>
+        <GridPane alignment = "CENTER" fx:id = "player2GridPane"></GridPane>
     </right>
 
 </BorderPane>
