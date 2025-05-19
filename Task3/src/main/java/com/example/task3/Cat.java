@@ -4,8 +4,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Cat extends Feline {
-    private final Image orangeCat = new Image(getClass().getResource("/com/example/task3/images/OrangeCat.png").toString());
-    private final Image purpleCat = new Image(getClass().getResource("/com/example/task3/images/PurpleCat.png").toString());
+    private final Image orangeCat = new Image(getClass().getResource("/com/example/task3/images/OrangeCatLower.png").toString());
+    private final Image purpleCat = new Image(getClass().getResource("/com/example/task3/images/PurpleCatLower.png").toString());
     private ImageView catIV;
 
     public Cat(int player) {

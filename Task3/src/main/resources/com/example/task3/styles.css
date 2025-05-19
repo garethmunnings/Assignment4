@@ -14,8 +14,7 @@
 }
 
 .pool-tile {
-    -fx-border-color: rgba(11, 81, 116, 0.65);
-    -fx-border-style: dashed;
+    -fx-border-color: rgba(4, 1, 1, 0.65);
     -fx-border-dash-array: 200 100; //doesntwork
--fx-background-color:  #b9e1f8
+    -fx-background-color:  #cfd0d1
 }

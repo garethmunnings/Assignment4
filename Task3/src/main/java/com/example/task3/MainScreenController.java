@@ -1,11 +1,14 @@
 package com.example.task3;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 
 public class MainScreenController {
 
@@ -26,29 +29,62 @@ public class MainScreenController {
 
     private void drawPlayerPools(){
         player1GridPane.getChildren().clear();
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < game.getPlayer1().getPool().getNumberOfKittensAvailable(); j++)
         {
-            //Pane pane = new Pane();
-            //pane.setPrefSize(100, 100);
-            //pane.getStyleClass().add("pool-tile");
+            Pane pane1 = new Pane();
+            pane1.setPrefSize(100, 100);
+            pane1.getStyleClass().add("pool-tile");
 
-            //System.out.println(game.getPlayer1().getPool().getNextKitten().getIV() + " " + j);
-            //pane.getChildren().add(game.getPlayer1().getPool().getNextKitten().getIV());
-            player1GridPane.add(game.getPlayer1().getPool().getNextKitten().getIV(),0,j);
-            player2GridPane.add(game.getPlayer2().getPool().getNextKitten().getIV(),0,j);
+            ImageView iv = new Kitten(1).getIV();
+            pane1.getChildren().add(iv);
+            player1GridPane.add(pane1,1,j);
+
+            setUpDragStartEvent(pane1, 1, j);
+
+            Pane pane2 = new Pane();
+            pane2.setPrefSize(100, 100);
+            pane2.getStyleClass().add("pool-tile");
+
+
+            pane2.getChildren().add(game.getPlayer2().getPool().getNextKitten().getIV());
+            player2GridPane.add(pane2,0,j);
+
+            setUpDragStartEvent(pane2, 0, j);
         }
         for (int j = 0; j < 8; j++)
         {
-            //Pane pane = new Pane();
-            //pane.setPrefSize(100, 100);
-            //pane.getStyleClass().add("pool-tile");
+            Pane pane1 = new Pane();
+            pane1.setPrefSize(100, 100);
+            pane1.getStyleClass().add("pool-tile");
 
-            //System.out.println(game.getPlayer1().getPool().getNextCat().getIV() + " " + j);
-            //pane.getChildren().add(game.getPlayer1().getPool().getNextCat().getIV());
-            player1GridPane.add(game.getPlayer1().getPool().getNextCat().getIV(), 1,j);
-            player2GridPane.add(game.getPlayer2().getPool().getNextCat().getIV(),1,j);
+            setUpDragStartEvent(pane1, 0,j);
+
+            Pane pane2 = new Pane();
+            pane2.setPrefSize(100, 100);
+            pane2.getStyleClass().add("pool-tile");
+
+            setUpDragStartEvent(pane2, 1,j);
+            pane1.getChildren().add(game.getPlayer1().getPool().getNextCat().getIV());
+            player1GridPane.add(pane1,0,j);
+
+            pane2.getChildren().add(game.getPlayer2().getPool().getNextCat().getIV());
+            player2GridPane.add(pane2,1,j);
         }
 
+    }
+
+    private void setUpDragStartEvent(Pane pane, int col, int row){
+        pane.setOnDragDetected(event -> {
+            Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
+
+            ClipboardContent content = new ClipboardContent();
+            content.putString("kitten");
+            db.setContent(content);
+
+            game.getCurrentPlayer().getPool();
+
+            event.consume();
+        });
     }
 
     private void changePlayerTurnLabel() {
@@ -65,6 +101,36 @@ public class MainScreenController {
                 Pane pane = new Pane();
                 pane.setPrefSize(100, 100);
                 pane.getStyleClass().add("tile");
+
+
+                pane.setOnDragOver(event -> {
+                    if (event.getGestureSource() != pane && event.getDragboard().hasString()) {
+                        event.acceptTransferModes(TransferMode.MOVE);
+                    }
+                    event.consume();
+                });
+
+                pane.setOnDragDropped(event -> {
+                    Dragboard db = event.getDragboard();
+                    boolean success = false;
+
+                    if (db.hasString()) {
+                        Pane sourcePane = (Pane) event.getGestureSource();
+                        Node kitten = sourcePane.getChildren().get(0);
+
+                        sourcePane.getChildren().clear();
+                        pane.getChildren().add(kitten);
+
+                        success = true;
+                    }
+
+                    Tile t = new Tile();
+                    t.setFeline(game.getPlayer1().getPool().getNextKitten());
+                    game.getBed().updateTile(0,0, t);
+                    game.getBed().display();
+                    event.setDropCompleted(success);
+                    event.consume();
+                });
 
                 int r = row, c = col;
                 pane.setOnMouseClicked(e -> handleTileClick(r, c));

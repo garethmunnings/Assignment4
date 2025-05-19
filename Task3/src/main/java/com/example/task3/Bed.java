@@ -25,4 +25,17 @@ public class Bed {
     public void updateTile(int row, int col, Tile tile) {
         grid[row][col] = tile;
     }
+
+    public void display() {
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < cols; j++){
+                if(grid[i][j].getFeline() instanceof Feline)
+                    System.out.print("c ");
+                else
+                    System.out.print("x ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 }

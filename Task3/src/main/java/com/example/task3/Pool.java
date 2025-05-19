@@ -1,50 +1,49 @@
 package com.example.task3;
 
+import java.util.ArrayList;
+
 public class Pool {
-    private Feline[] pool;
+    private ArrayList<Kitten> kittenPool;
+    private ArrayList<Cat> catPool;
+
     public Pool(int playerNum) {
-        pool = new Feline[]{new Kitten(playerNum), new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum),new Kitten(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum), new Cat(playerNum) };
+        kittenPool = new ArrayList<Kitten>();
+        for (int i = 0; i < 8; i++) {
+            kittenPool.add(new Kitten(playerNum));
+        }
     }
 
-    //public Feline[] getPool(){return pool;}
-
     public Kitten getNextKitten(){
-        for (int i = 0; i < pool.length; i++) {
-            if(pool[i] instanceof Kitten && !pool[i].getInPlay())
-            {
-                pool[i].setInPlay();
-                return (Kitten)pool[i];
-            }
+        Kitten kitten = kittenPool.getFirst();
+        if(!kitten.getInPlay())
+        {
+            kitten.setInPlay();
+            kittenPool.remove(kitten);
+            return kitten;
         }
         return null;
     }
+
     public Cat getNextCat(){
-        for (int i = 0; i < pool.length; i++) {
-            if(pool[i] instanceof Cat && !pool[i].getInPlay())
-            {
-                pool[i].setInPlay();
-                return (Cat)pool[i];
-            }
+        Cat cat = catPool.getFirst();
+        if(!cat.getInPlay())
+        {
+            cat.setInPlay();
+            catPool.remove(cat);
+            return cat;
         }
         return null;
     }
 
     public boolean hasKittenAvailable(){
-        for (int i = 0; i < pool.length; i++) {
-            if(pool[i] instanceof Kitten && !pool[i].getInPlay())
-            {
-                return true;
-            }
-        }
-        return false;
+        if(kittenPool.isEmpty()) return false;
+        return true;
     }
     public boolean hasCatAvailable(){
-        for (int i = 0; i < pool.length; i++) {
-            if(pool[i] instanceof Cat && !pool[i].getInPlay())
-            {
-                return true;
-            }
-        }
-        return false;
+        if(catPool.isEmpty()) return false;
+        return true;
     }
+
+    public int getNumberOfKittensAvailable(){return kittenPool.size();}
+    public int getNumberOfCatsAvailable(){return catPool.size();}
 }

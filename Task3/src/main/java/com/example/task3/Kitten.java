@@ -6,8 +6,8 @@ import javafx.scene.image.ImageView;
 public class Kitten extends Feline {
     private String type;
     private int player;
-    private final Image purpleKitten = new Image(getClass().getResource("/com/example/task3/images/PurpleKitten.png").toString());
-    private final Image orangeKitten = new Image(getClass().getResource("/com/example/task3/images/OrangeKitten.png").toString());
+    private final Image purpleKitten = new Image(getClass().getResource("/com/example/task3/images/PurpleKittenLower.png").toString());
+    private final Image orangeKitten = new Image(getClass().getResource("/com/example/task3/images/OrangeKittenLower.png").toString());
     private ImageView kittenIV;
 
     public Kitten(int player) {
