@@ -6,6 +6,7 @@ public abstract class Feline {
     protected int player;
     protected ImageView image;
     protected boolean inPlay;
+    protected boolean active;
 
     public int getPlayer() {return player;}
     public boolean getInPlay() {return inPlay;}
@@ -20,4 +21,7 @@ public abstract class Feline {
     }
 
     public ImageView getIV() {return image;}
+
+    public boolean getActive(){return active;}
+    public void setActive(boolean active) {this.active = active;}
 }

@@ -31,6 +31,7 @@ public class MainScreenController {
 
     private void drawPlayerPools(){
         player1GridPane.getChildren().clear();
+        player2GridPane.getChildren().clear();
         drawPool(1);
         drawPool(2);
 
@@ -126,27 +127,47 @@ public class MainScreenController {
 
                     if (db.hasString()) {
                         Tile t = (Tile)DragContext.draggedObject;
-                        if(DragContext.fromPool){
-                            game.getCurrentPlayer().getPool().getNextKitten();
-                        }
+                        if(DragContext.fromPool){//remove feline from pool
 
+                            if(t.getFeline() instanceof Cat){
+                                if(t.getFeline().player == 1)
+                                    game.getPlayer1().getPool().removeCat((Cat)t.getFeline());
+                                else
+                                    game.getPlayer2().getPool().removeCat((Cat)t.getFeline());
+                            }
+                            else {
+                                if (t.getFeline().player == 1)
+                                    game.getPlayer1().getPool().removeKitten((Kitten) t.getFeline()); //not finding kitten
+                                else if (t.getFeline().player == 2)
+                                    game.getPlayer2().getPool().removeKitten((Kitten) t.getFeline()); //not finding kitten
+                                }
+                        }
+                        t.getFeline().setInPlay();
                         tile.setFeline(t.getFeline());
-                        if(t.getRow() > -1)
+                        if(!DragContext.fromPool) //set the tile on the beds feline to null
                             game.getBed().getTile(t.getRow(), t.getCol()).setFeline(null);
+
                         ArrayList<Feline> felinesBoopedOffBed;
                         felinesBoopedOffBed = game.getBed().updateTile(r,c, tile, false);
 
-                        for(Feline f : felinesBoopedOffBed)
-                            game.getCurrentPlayer().getPool().addFeline(f);
+                        for(Feline f : felinesBoopedOffBed){
+                            f.setOutOfPlay();
 
-                        drawPool(game.getCurrentPlayer().getNum());
+                            if(f.getPlayer() == 1) {
+                                game.getPlayer1().getPool().addFeline(f);
+                            }
+                            else if (f.getPlayer() == 2) {
+                                game.getPlayer2().getPool().addFeline(f);
+                            }
+
+                        }
+
+                        drawPlayerPools();
                         pane.getChildren().add(tile.getFeline().getIV());
 
 
                         success = true;
                     }
-
-                    game.getBed().display();
                     drawGrid();
 
                     event.setDropCompleted(success);

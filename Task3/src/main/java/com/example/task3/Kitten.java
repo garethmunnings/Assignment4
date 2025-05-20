@@ -12,6 +12,7 @@ public class Kitten extends Feline {
 
     public Kitten(int player) {
         this.player = player;
+        active = true;
 
         if(player == 1)
             kittenIV = new ImageView(orangeKitten);
@@ -24,5 +25,13 @@ public class Kitten extends Feline {
     public ImageView getIV() {
         return kittenIV;
     }
+    @Override
+    public int getPlayer() {return player;}
+    @Override
+    public boolean getInPlay() {
+        return inPlay;
+    }
+
+
 
 }

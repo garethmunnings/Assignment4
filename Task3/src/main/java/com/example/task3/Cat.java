@@ -9,6 +9,7 @@ public class Cat extends Feline {
     private ImageView catIV;
 
     public Cat(int player) {
+        active = false;
         this.player = player;
         if(player == 1)
             catIV = new ImageView(orangeCat);
@@ -23,5 +24,14 @@ public class Cat extends Feline {
     public ImageView getIV() {
         return catIV;
     }
+    @Override
+    public int getPlayer() {
+        return player;
+    }
+    @Override
+    public boolean getInPlay() {
+        return inPlay;
+    }
+
 
 }
