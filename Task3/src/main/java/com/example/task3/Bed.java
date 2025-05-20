@@ -265,6 +265,56 @@ public class Bed {
         return felinesBoopedOffBed;
     }
 
+    public boolean threeKittensInARow()
+    {
+        int count = 0;
+        for(int i = 0 ; i < grid.length ; i++){
+            for(int j = 0 ; j < grid[0].length ; j++){
+                int player = 0;
+                Feline current = grid[i][j].getFeline();
+                if(current instanceof Kitten)
+                    player = current.getPlayer();
+                else
+                    break;
+
+                //horizontal
+                if (j + 2 < cols &&
+                        grid[i][j + 1].getFeline() instanceof Kitten &&
+                        grid[i][j + 2].getFeline() instanceof Kitten)
+                {
+                    if(grid[i][j + 1].getFeline().getPlayer() == player &&
+                            grid[i][j + 2].getFeline().getPlayer() == player)
+                        return true;
+                }
+
+                //vertical
+                if (i + 2 < rows &&
+                        grid[i + 1][j].getFeline() instanceof Kitten &&
+                        grid[i + 2][j].getFeline() instanceof Kitten) {
+                    if(grid[i + 1][j].getFeline().getPlayer() == player && grid[i + 2][j].getFeline().getPlayer() == player)
+                        return true;
+                }
+
+                //down right
+                if (i + 2 < rows && j + 2 < cols &&
+                        grid[i + 1][j + 1].getFeline() instanceof Kitten &&
+                        grid[i + 2][j + 2].getFeline() instanceof Kitten) {
+                    if(grid[i + 1][j + 1].getFeline().getPlayer() == player && grid[i + 2][j + 2].getFeline().getPlayer() == player)
+                        return true;
+                }
+
+                //down left
+                if (i + 2 < rows && j - 2 >= 0 &&
+                        grid[i + 1][j - 1].getFeline() instanceof Kitten &&
+                        grid[i + 2][j - 2].getFeline() instanceof Kitten) {
+                    if(grid[i + 1][j - 1].getFeline().getPlayer() == player && grid[i + 2][j - 2].getFeline().getPlayer() == player)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
 //    public void display() {
 //        for (int i = 0; i < rows; i++){
 //            for (int j = 0; j < cols; j++){

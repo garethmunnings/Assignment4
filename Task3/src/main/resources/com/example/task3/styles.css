@@ -18,3 +18,8 @@
     -fx-border-dash-array: 200 100; //doesntwork
     -fx-background-color:  #cfd0d1
 }
+
+.player-turn-label {
+    -fx-font-color: black; -fx-text-fill: black;
+    -fx-font-size: x-large;
+}

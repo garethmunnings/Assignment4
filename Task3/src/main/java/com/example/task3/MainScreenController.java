@@ -1,6 +1,7 @@
 package com.example.task3;
 
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -85,29 +86,38 @@ public class MainScreenController {
     }
 
     private void setUpDragStartEvent(Pane pane, Tile tile, boolean fromPool){
-        pane.setOnDragDetected(event -> {
-            DragContext.draggedObject = tile;
-            DragContext.fromPool = fromPool;
-            Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
+        if(game.getCurrentPlayer().getNum() == tile.getFeline().getPlayer()){
 
-            //TODO make this feline independent
-            //remove feline from pool
-            if(fromPool) {
-                int p = tile.getFeline().getPlayer();
-                if (p == 1) {
-                    game.getPlayer1().getPool().removeKitten((Kitten) tile.getFeline());
+            pane.setOnMouseEntered(event -> pane.setCursor(Cursor.MOVE));
+            pane.setOnMouseExited(event -> pane.setCursor(Cursor.DEFAULT));
+
+            pane.setOnDragDetected(event -> {
+                DragContext.draggedObject = tile;
+                DragContext.fromPool = fromPool;
+                Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
+
+                //TODO make this feline independent
+                //remove feline from pool
+                if(fromPool) {
+                    int p = tile.getFeline().getPlayer();
+                    if (p == 1) {
+                        game.getPlayer1().getPool().removeKitten((Kitten) tile.getFeline());
+                    }
+                    if (p == 2) {
+                        game.getPlayer2().getPool().removeKitten((Kitten) tile.getFeline());
+                    }
                 }
-                if (p == 2) {
-                    game.getPlayer2().getPool().removeKitten((Kitten) tile.getFeline());
-                }
-            }
 
-            ClipboardContent content = new ClipboardContent();
-            content.putString("feline");
-            db.setContent(content);
+                ClipboardContent content = new ClipboardContent();
+                content.putString("feline");
+                db.setContent(content);
 
-            event.consume();
-        });
+                event.consume();
+            });
+        }
+        else {
+            pane.setOnDragDetected(null); // disable dragging
+        }
     }
 
     private void changePlayerTurnLabel() {
@@ -178,6 +188,12 @@ public class MainScreenController {
 
 
                         success = true;
+                        game.endTurn();
+                        System.out.println(game.getBed().threeKittensInARow());
+                        drawPlayerPools();
+
+                        System.out.println(game.getPlayerTurn());
+                        changePlayerTurnLabel();
                     }
                     drawGrid();
 
@@ -195,6 +211,7 @@ public class MainScreenController {
                     setUpDragStartEvent(pane, tile, false);
                 }
                 gridPane.add(pane, col, row);
+
             }
         }
     }
@@ -203,13 +220,8 @@ public class MainScreenController {
     private void handleTileClick(int r, int c) {
         Tile tile = game.getBed().getTile(r, c);
         if (tile.isEmpty()) {
-            if(game.getCurrentPlayer().getPool().hasKittenAvailable()) {
-                tile.setFeline(game.getCurrentPlayer().getPool().getNextKitten());
-            }
+
         }
-        game.endTurn();
-        changePlayerTurnLabel();
-        drawGrid();
     }
 
 }

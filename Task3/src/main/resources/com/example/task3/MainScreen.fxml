@@ -6,13 +6,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.task3.MainScreenController"
             prefHeight="800.0" prefWidth="1200.0"
             stylesheets = "@styles.css">
     <top>
-        <Label fx:id="playerTurnLabel" text = "Player 1's turn"/>
+        <HBox alignment="CENTER">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <Label fx:id="playerTurnLabel" text = "Player 1's turn" styleClass="player-turn-label"/>
+        </HBox>
     </top>
     <center>
         <GridPane alignment = "CENTER" fx:id = "gridPane"/>
