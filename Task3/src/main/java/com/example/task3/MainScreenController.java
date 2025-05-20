@@ -34,7 +34,6 @@ public class MainScreenController {
         player2GridPane.getChildren().clear();
         drawPool(1);
         drawPool(2);
-
     }
 
     private void drawPool(int playernum){
@@ -71,7 +70,7 @@ public class MainScreenController {
             pane.setPrefSize(100, 100);
             pane.getStyleClass().add("pool-tile");
 
-            ImageView iv = new Cat(playernum).getIV();
+            ImageView iv = cat.getIV();
             pane.getChildren().add(iv);
             if(playernum == 1)
                 player1GridPane.add(pane, 0, i + player.getPool().getNumberOfKittensAvailable());
@@ -90,6 +89,18 @@ public class MainScreenController {
             DragContext.draggedObject = tile;
             DragContext.fromPool = fromPool;
             Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
+
+            //TODO make this feline independent
+            //remove feline from pool
+            if(fromPool) {
+                int p = tile.getFeline().getPlayer();
+                if (p == 1) {
+                    game.getPlayer1().getPool().removeKitten((Kitten) tile.getFeline());
+                }
+                if (p == 2) {
+                    game.getPlayer2().getPool().removeKitten((Kitten) tile.getFeline());
+                }
+            }
 
             ClipboardContent content = new ClipboardContent();
             content.putString("feline");

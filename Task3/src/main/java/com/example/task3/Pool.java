@@ -15,8 +15,7 @@ public class Pool {
     }
 
     public void removeKitten(Kitten kitten) {
-        kittenPool.removeFirst();
-        //System.out.println(kittenPool.remove(kitten));
+        kittenPool.remove(kitten);
     }
     public void removeCat(Cat cat) {
         catPool.remove(cat);
@@ -62,18 +61,6 @@ public class Pool {
     public void addKitten(Kitten kitten){
         kitten.setOutOfPlay();
         kittenPool.add(kitten);
-
-
-        int i = 0;
-        int n = 0;
-        for(Kitten kittin : kittenPool)
-        {
-            System.out.println(kittin + " " + i);
-            n = kitten.getPlayer();
-            i++;
-        }
-        System.out.println("Player " + n);
-        System.out.println("-----------");
     }
     public void addCat(Cat cat){
         cat.setOutOfPlay();
@@ -86,4 +73,17 @@ public class Pool {
         else
             addCat((Cat)feline);
     }
+
+//    public void writePoolToConsole(){
+//        int i = 0;
+//        int n = 0;
+//        for(Kitten kitten : kittenPool)
+//        {
+//            System.out.println(kitten + " " + i);
+//            n = kitten.getPlayer();
+//            i++;
+//        }
+//        System.out.println("Player " + n);
+//        System.out.println("-----------");
+//    }
 }
