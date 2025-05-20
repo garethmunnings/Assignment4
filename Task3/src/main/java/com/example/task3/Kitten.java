@@ -10,6 +10,9 @@ public class Kitten extends Feline {
     private final Image orangeKitten = new Image(getClass().getResource("/com/example/task3/images/OrangeKittenLower.png").toString());
     private ImageView kittenIV;
 
+    private int row;
+    private int col;
+
     public Kitten(int player) {
         this.player = player;
         active = true;
@@ -31,7 +34,4 @@ public class Kitten extends Feline {
     public boolean getInPlay() {
         return inPlay;
     }
-
-
-
 }

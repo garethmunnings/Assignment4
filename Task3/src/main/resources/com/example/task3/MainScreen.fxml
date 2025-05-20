@@ -21,7 +21,21 @@
         </HBox>
     </top>
     <center>
-        <GridPane alignment = "CENTER" fx:id = "gridPane"/>
+        <StackPane>
+
+            <GridPane alignment = "CENTER" fx:id = "gridPane"/>
+
+            <VBox alignment="CENTER">
+                <Label fx:id = "winLabel" visible="true" styleClass="player-win-label" text = "Player 1 wins"/>
+                <HBox alignment="CENTER">
+                    <Button fx:id = "homeButton" text = "Home" styleClass="options-button"></Button>
+                    <Button fx:id = "newGameButton" text = "New Game" styleClass="options-button"></Button>
+                </HBox>
+            </VBox>
+
+
+        </StackPane>
+
     </center>
 
     <left>

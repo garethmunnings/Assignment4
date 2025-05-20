@@ -21,6 +21,7 @@ public class MainScreenController {
     @FXML Label playerTurnLabel;
     @FXML private GridPane player1GridPane;
     @FXML private GridPane player2GridPane;
+    @FXML private Label winLabel;
     Game game;
 
     @FXML
@@ -38,7 +39,7 @@ public class MainScreenController {
     }
 
     private void drawPool(int playernum){
-        //TODO make pool and kitten pool indexes the same and coordinate them better
+
         Player player;
         if(playernum == 1)
             player = game.getPlayer1();
@@ -96,15 +97,20 @@ public class MainScreenController {
                 DragContext.fromPool = fromPool;
                 Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
 
-                //TODO make this feline independent
                 //remove feline from pool
                 if(fromPool) {
                     int p = tile.getFeline().getPlayer();
                     if (p == 1) {
-                        game.getPlayer1().getPool().removeKitten((Kitten) tile.getFeline());
+                        if (tile.getFeline() instanceof Kitten)
+                            game.getPlayer1().getPool().removeKitten((Kitten) tile.getFeline());
+                        else if(tile.getFeline() instanceof Cat)
+                            game.getPlayer1().getPool().removeCat((Cat) tile.getFeline());
                     }
                     if (p == 2) {
-                        game.getPlayer2().getPool().removeKitten((Kitten) tile.getFeline());
+                        if (tile.getFeline() instanceof Kitten)
+                            game.getPlayer2().getPool().removeKitten((Kitten) tile.getFeline());
+                        else if(tile.getFeline() instanceof Cat)
+                            game.getPlayer2().getPool().removeCat((Cat) tile.getFeline());
                     }
                 }
 
@@ -188,11 +194,18 @@ public class MainScreenController {
 
 
                         success = true;
+                        if(game.getBed().threeCatsInARow())
+                        {
+                            winLabel.setText("Player " + game.getPlayerTurn() + "wins");
+                            winLabel.setVisible(true);
+                        }
                         game.endTurn();
-                        System.out.println(game.getBed().threeKittensInARow());
-                        drawPlayerPools();
 
-                        System.out.println(game.getPlayerTurn());
+                        if(game.getBed().threeKittensInARow() != null){
+                            upgradeKittensToCats(game.getBed().threeKittensInARow());
+                        }
+
+                        drawPlayerPools();
                         changePlayerTurnLabel();
                     }
                     drawGrid();
@@ -214,6 +227,28 @@ public class MainScreenController {
 
             }
         }
+    }
+
+    private void upgradeKittensToCats(ArrayList<Feline> kittensInARow)
+    {;
+        int player = kittensInARow.getFirst().getPlayer();
+        if(player == 1)
+            for(Feline f : kittensInARow){
+                Kitten k = (Kitten)f;
+                game.getBed().getTileWithFeline(k).setEmpty();
+
+                game.getPlayer1().getPool().addCat(new Cat(player));
+
+            }
+        else if(player == 2)
+        {
+            for(Feline f : kittensInARow) {
+                Kitten k = (Kitten)f;
+                game.getBed().getTileWithFeline(k).setEmpty();
+                game.getPlayer2().getPool().addCat(new Cat(player));
+            }
+        }
+        drawPlayerPools();
     }
 
 
