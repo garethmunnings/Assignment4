@@ -37,7 +37,7 @@ public class MainScreenController {
     }
 
     private void drawPool(int playernum){
-        //TODO make the pool stay the same size when felines are added back to it
+        //TODO make pool and kitten pool indexes the same and coordinate them better
         Player player;
         if(playernum == 1)
             player = game.getPlayer1();
@@ -62,7 +62,7 @@ public class MainScreenController {
 
             Tile t = new Tile(-1,-1);
             t.setFeline(kitten);
-            setUpDragStartEvent(pane, t);
+            setUpDragStartEvent(pane, t, true);
             i++;
         }
         for (Cat cat : player.getPool().getCatPool()) {
@@ -79,14 +79,15 @@ public class MainScreenController {
 
             Tile t = new Tile(-1,-1);
             t.setFeline(cat);
-            setUpDragStartEvent(pane, t);
+            setUpDragStartEvent(pane, t, true);
             i++;
         }
     }
 
-    private void setUpDragStartEvent(Pane pane, Tile tile){
+    private void setUpDragStartEvent(Pane pane, Tile tile, boolean fromPool){
         pane.setOnDragDetected(event -> {
             DragContext.draggedObject = tile;
+            DragContext.fromPool = fromPool;
             Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
 
             ClipboardContent content = new ClipboardContent();
@@ -125,6 +126,10 @@ public class MainScreenController {
 
                     if (db.hasString()) {
                         Tile t = (Tile)DragContext.draggedObject;
+                        if(DragContext.fromPool){
+                            game.getCurrentPlayer().getPool().getNextKitten();
+                        }
+
                         tile.setFeline(t.getFeline());
                         if(t.getRow() > -1)
                             game.getBed().getTile(t.getRow(), t.getCol()).setFeline(null);
@@ -155,7 +160,7 @@ public class MainScreenController {
 
                     ImageView iv = feline.getIV();
                     pane.getChildren().add(iv);
-                    setUpDragStartEvent(pane, tile);
+                    setUpDragStartEvent(pane, tile, false);
                 }
                 gridPane.add(pane, col, row);
             }

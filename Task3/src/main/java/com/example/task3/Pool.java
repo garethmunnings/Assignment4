@@ -53,6 +53,12 @@ public class Pool {
 
     public void addKitten(Kitten kitten){
         kittenPool.add(kitten);
+        int i = 0;
+        for(Kitten kittine : kittenPool)
+        {
+            System.out.println(kittine + " " + i);
+            i++;
+        }
     }
     public void addCat(Cat cat){
         catPool.add(cat);
