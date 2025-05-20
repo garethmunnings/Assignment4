@@ -25,11 +25,14 @@
 
             <GridPane alignment = "CENTER" fx:id = "gridPane"/>
 
-            <VBox alignment="CENTER">
-                <Label fx:id = "winLabel" visible="true" styleClass="player-win-label" text = "Player 1 wins"/>
+            <VBox alignment="CENTER" visible = "false" fx:id = "winVBox">
+
+                <Label fx:id = "winLabel"  styleClass="player-win-label" text = "Player 1 wins"/>
                 <HBox alignment="CENTER">
-                    <Button fx:id = "homeButton" text = "Home" styleClass="options-button"></Button>
-                    <Button fx:id = "newGameButton" text = "New Game" styleClass="options-button"></Button>
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Button fx:id = "homeButton" text = "Home" styleClass="options-button" ></Button>
                 </HBox>
             </VBox>
 

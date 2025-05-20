@@ -6,14 +6,23 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns ="http://javafx.com/javafx"
+<?import org.controlsfx.control.cell.ImageGridCell?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<BorderPane xmlns ="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.task3.WelcomeScreenController"
             prefHeight="800.0" prefWidth="1000.0"
             stylesheets ="@styles.css">
-    <children>
-        <VBox AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-            <Button text ="Play Game!" onAction="#handlePlay" />
-        </VBox>
-    </children>
-</AnchorPane>
+        <center>
+            <VBox alignment="CENTER">
+                <ImageView fitWidth="400" preserveRatio="true">
+                    <image>
+                        <Image url="@images/logo.png" />
+                    </image>
+                </ImageView>
+                <Button text ="Play Game!" onAction="#handlePlay" styleClass="play-game-button"/>
+            </VBox>
+        </center>
+
+</BorderPane>

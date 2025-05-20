@@ -1,3 +1,18 @@
+/*@font-face {*/
+/*    font-family: 'Luckiest Guy';*/
+/*    src: url('fonts/LuckiestGuy-Regular.ttf');*/
+/*}*/
+.player-win-label {
+    -fx-background-color: #f0f4ff;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 20;
+    -fx-text-fill: #2a3d66;
+    -fx-font-size: 75px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.2, 2, 2);
+}
+
 .my-button {
     -fx-background-color: #4CAF50;
     -fx-text-fill: white;
@@ -20,12 +35,65 @@
 }
 
 .player-turn-label {
-    -fx-font-color: black; -fx-text-fill: black;
-    -fx-font-size: x-large;
+    -fx-background-color: #f0f4ff;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 20;
+    -fx-text-fill: #2a3d66;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.2, 2, 2);
 }
 
-.player-win-label {
-    -fx-font-color: black; -fx-text-fill: black;
-    -fx-background-color:  #ffffff;
-    -fx-font-size: 50px;
+/* Basic stylish button */
+.options-button {
+    -fx-background-color:  #436294;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 4, 0, 0, 2);
+    -fx-border-color: transparent;
+    -fx-border-radius: 10;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.options-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a83c7, #436294);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0, 0, 3);
+}
+
+/* Pressed effect */
+.options-button:pressed {
+    -fx-background-color: #008ecc;
+    -fx-translate-y: 1;
+}
+
+.play-game-button {
+    -fx-background-color:  #436294;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 40px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 4, 0, 0, 2);
+    -fx-border-color: transparent;
+    -fx-border-radius: 10;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.play-game-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a83c7, #436294);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0, 0, 3);
+}
+
+/* Pressed effect */
+.play-game-button:pressed {
+    -fx-background-color: #008ecc;
+    -fx-translate-y: 1;
 }

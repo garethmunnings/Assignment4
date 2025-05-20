@@ -5,8 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-//TODO win condition
-//TODO make ui nice
+//TODO make ui better lol
 
 public class Main extends Application {
     @Override

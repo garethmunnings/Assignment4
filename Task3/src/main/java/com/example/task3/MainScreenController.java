@@ -3,6 +3,7 @@ package com.example.task3;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -10,6 +11,8 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
@@ -22,6 +25,9 @@ public class MainScreenController {
     @FXML private GridPane player1GridPane;
     @FXML private GridPane player2GridPane;
     @FXML private Label winLabel;
+    @FXML private VBox winVBox;
+    @FXML private Button homeButton;
+
     Game game;
 
     @FXML
@@ -196,8 +202,20 @@ public class MainScreenController {
                         success = true;
                         if(game.getBed().threeCatsInARow())
                         {
+                            winVBox.setVisible(true);
                             winLabel.setText("Player " + game.getPlayerTurn() + "wins");
-                            winLabel.setVisible(true);
+                            homeButton.setOnAction((actionEvent -> {
+                                Main main = new Main();
+                                try {
+                                    main.start(new Stage());
+
+                                    Stage stage = (Stage) homeButton.getScene().getWindow();
+                                    stage.close();
+                                }
+                                catch (Exception e) {
+
+                                }
+                            }));
                         }
                         game.endTurn();
 
